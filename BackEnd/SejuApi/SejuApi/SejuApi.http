@@ -1,0 +1,6 @@
+@SejuApi_HostAddress = http://localhost:5030
+
+GET {{SejuApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
