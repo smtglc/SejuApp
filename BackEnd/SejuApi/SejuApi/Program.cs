@@ -1,15 +1,34 @@
+﻿using Application.Contract;
+using AutoMapper;
+using NLog;
+using Presentation.Controllers;
+using SejuApi.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddApplicationPart(typeof(AssemblyReferance).Assembly);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureManager();
+builder.Services.ConfigureAuthenticationManager();
+builder.Services.ConfigureLoggerService();
+builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 
 var app = builder.Build();
 
+//Exception middleware'i kullanmak için logger servisini alýyoruz
+var logger = app.Services.GetRequiredService<ILoggerService>();
+//Normalde gerekli servisleri builder aþamasýnda alýyoruz fakat bu yöntem app aþamasýnda alamamýzý saðlýyor.
+app.ConfigureExceptionHandler(logger);
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,7 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
