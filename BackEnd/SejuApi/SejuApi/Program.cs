@@ -20,8 +20,10 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
 
 var app = builder.Build();
+await app.Services.SeedIdentityAsync();
 
 //Exception middleware'i kullanmak için logger servisini alýyoruz
 var logger = app.Services.GetRequiredService<ILoggerService>();

@@ -70,6 +70,12 @@ namespace SejuApi.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -122,13 +128,13 @@ namespace SejuApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "95b4ed58-e47a-4873-aa61-ababad59b63a",
+                            Id = "23dd750b-d748-4dd0-9307-9dc2ec626aa9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "1103eca9-be48-4454-a2c2-4a1565f69ab2",
+                            Id = "570dd143-e6ab-4d77-b225-6cfbd9bbc527",
                             Name = "User",
                             NormalizedName = "USER"
                         });

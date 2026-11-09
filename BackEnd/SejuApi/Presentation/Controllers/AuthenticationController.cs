@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Application.Contract;
+using Domain.Dto;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Contract;
-using Domain.Dto;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
@@ -32,6 +33,28 @@ namespace Presentation.Controllers
                 return BadRequest(result.Errors);
             }
         }
+        [HttpPost("login")]
+        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto user)
+        {
+            if (!await _serviceManager.AuthenticationService.ValidateUser(user))
+                return Unauthorized(); // 401
 
+            var tokenDto = await _serviceManager
+                .AuthenticationService
+                .CreateToken(populateExp: true);
+
+            return Ok(tokenDto);
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] TokenDto tokenDto)
+        {
+            var tokenDtoToReturn = await _serviceManager
+                .AuthenticationService
+                .RefreshToken(tokenDto);
+            return Ok(tokenDtoToReturn);
+        }
     }
+
 }
+

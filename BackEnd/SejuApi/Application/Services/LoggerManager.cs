@@ -18,7 +18,7 @@ namespace Application.Services
 
         public void LogInfo(string message) => logger.Info(message);
 
-        public void LogWarn(string message) => logger.Warn(message);
+        public void LogWarning(string message) => logger.Warn(message);
 
     }
 }
