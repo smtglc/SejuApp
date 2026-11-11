@@ -18,6 +18,7 @@ namespace Infrastructure.EFCore
             : base(options)
         {
         }
+        public DbSet<Deck> Decks { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

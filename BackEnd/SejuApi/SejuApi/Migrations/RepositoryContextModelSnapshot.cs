@@ -22,6 +22,33 @@ namespace SejuApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Models.Deck", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Decks");
+                });
+
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -128,13 +155,13 @@ namespace SejuApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "23dd750b-d748-4dd0-9307-9dc2ec626aa9",
+                            Id = "65dec699-70ab-4f0b-b0bc-69fcc570ba69",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "570dd143-e6ab-4d77-b225-6cfbd9bbc527",
+                            Id = "a2d8eaf3-0d65-4051-8e86-e74acdd15c21",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -244,6 +271,17 @@ namespace SejuApi.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.Deck", b =>
+                {
+                    b.HasOne("Domain.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

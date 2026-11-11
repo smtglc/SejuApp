@@ -1,6 +1,7 @@
 ﻿using Application.Contract;
 using Application.Services;
 using Domain.Models;
+using Infrastructure.Contracts;
 using Infrastructure.EFCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 
@@ -33,6 +35,10 @@ namespace SejuApi.Extensions
         {
             service.AddSingleton<ILoggerService, LoggerManager>();
         }
+        public static void ConfigureRepositoryManager(this IServiceCollection service)
+        {
+            service.AddScoped<IRepositoryManager, RepositoryManager>();
+        }   
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             var builder = services.AddIdentity<User ,IdentityRole>(options =>
@@ -69,7 +75,37 @@ namespace SejuApi.Extensions
                 }
             );
         }
-  
+        public static void AddSwaggerConfiguration(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT token giriniz. Örnek: Bearer {token}"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+            });
+        }
+
 
     }
 }

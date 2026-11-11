@@ -16,11 +16,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.ConfigureManager();
 builder.Services.ConfigureAuthenticationManager();
 builder.Services.ConfigureLoggerService();
+builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.AddSwaggerConfiguration();
 
 //Cors Ayarı / Client dan gelen hangi isteklerin kabul edileceğini belirliyoruz.
 builder.Services.AddCors(options =>
