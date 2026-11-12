@@ -22,6 +22,32 @@ namespace SejuApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Models.Card", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DeckId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Meaning")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Word")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeckId");
+
+                    b.ToTable("Cards");
+                });
+
             modelBuilder.Entity("Domain.Models.Deck", b =>
                 {
                     b.Property<Guid>("Id")
@@ -155,13 +181,13 @@ namespace SejuApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "65dec699-70ab-4f0b-b0bc-69fcc570ba69",
+                            Id = "4bc89791-5a06-4b25-8304-4456c84be6c0",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "a2d8eaf3-0d65-4051-8e86-e74acdd15c21",
+                            Id = "b9153332-f210-4d8b-8700-5df85ff7593b",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -273,6 +299,17 @@ namespace SejuApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Models.Card", b =>
+                {
+                    b.HasOne("Domain.Models.Deck", "Deck")
+                        .WithMany("Cards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deck");
+                });
+
             modelBuilder.Entity("Domain.Models.Deck", b =>
                 {
                     b.HasOne("Domain.Models.User", "User")
@@ -333,6 +370,11 @@ namespace SejuApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Models.Deck", b =>
+                {
+                    b.Navigation("Cards");
                 });
 #pragma warning restore 612, 618
         }

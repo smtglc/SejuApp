@@ -41,5 +41,46 @@ namespace Presentation.Controllers
             var decks = await _serviceManager.DeckService.GetUserByAllDecks(userId, trackChanges: false);
             return Ok(decks);
         }
+        [Authorize]
+        [HttpGet("{deckId}")]
+        public async Task<IActionResult> GetDeckById(Guid deckId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var deck = await _serviceManager.DeckService.GetOneDeckByIdAsync(deckId,userId, trackChanges: false);
+            if (deck == null)
+            {
+                return NotFound();
+            }
+            return Ok(deck);
+        }
+        [Authorize]
+        [HttpDelete("{deckId}")]
+        public async Task<IActionResult> DeleteDeck(Guid deckId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            await _serviceManager.DeckService.DeleteDeck(deckId, userId);
+            return NoContent();
+        }
+        [Authorize]
+        [HttpPut("{deckId}")]
+        public async Task<IActionResult> UpdateDeck(Guid deckId,[FromBody] UpdateForDeckDto deckForUpdateDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+           
+           await _serviceManager.DeckService.UpdateDeck(deckForUpdateDto,userId,deckId);
+            return NoContent();
+        }
     }
 }

@@ -11,10 +11,10 @@ namespace Application.Contract
 {
     public interface IDeckService
     {
-        Task<Deck> GetOneDeckByIdAsync(string userId,bool trackChanges);
+        Task<ResponseDeckDto> GetOneDeckByIdAsync(Guid deckId,string userId,bool trackChanges);
         Task<IEnumerable<ResponseDeckDto>> GetUserByAllDecks(string userId,bool trackChanges);
         Task<ResponseDeckDto> CreateDeck(CreateDeckDto deckDto,string userId);
-        void UpdateDeck(UpdateForDeckDto deckDto);
-        void DeleteDeck(Deck deck);
+        Task UpdateDeck(UpdateForDeckDto deckDto,string userId,Guid deckId);
+        Task DeleteDeck(Guid deckId,string userId);
     }
 }

@@ -11,7 +11,7 @@ namespace Infrastructure.Contracts
     public interface IDeckRepository : IRepositoryBase<Deck>
     {
         Task<IEnumerable<Deck>> GetUserByAllDecks(string userId,bool trackChanges);
-        Task<Deck> GetDecksByUserId(string userId, bool trackChanges);
+        Task<Deck> GetDecksByUserIdAsync(Guid deckId,string userId, bool trackChanges);
         void CreateDeck(Deck deck);
         void UpdateDeck (Deck deck);
         void DeleteDeck(Deck deck);

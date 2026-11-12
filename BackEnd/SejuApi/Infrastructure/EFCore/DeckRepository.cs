@@ -30,9 +30,9 @@ namespace Infrastructure.EFCore
                 .ToListAsync();
         }
 
-        public async Task<Deck> GetDecksByUserId(string userId, bool trackChanges)
+        public async Task<Deck> GetDecksByUserIdAsync(Guid deckId,string userId, bool trackChanges)
         {
-           return await FindByCondition(x => x.Id.Equals(userId), trackChanges).SingleOrDefaultAsync();
+           return await FindByCondition(x => x.Id.Equals(deckId) && x.UserId.Equals(userId), trackChanges).SingleOrDefaultAsync();
         }
 
         public void UpdateDeck(Deck deck) => Update(deck);

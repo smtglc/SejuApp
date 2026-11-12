@@ -30,14 +30,22 @@ namespace Application.Services
             return _mapper.Map<ResponseDeckDto>(deck);
         }
 
-        public void DeleteDeck(Deck deck)
+        public async Task DeleteDeck(Guid deckId,string userId)
         {
-            throw new NotImplementedException();
+            var deck = await _repositoryManager.Deck.GetDecksByUserIdAsync(deckId,userId, true);
+            if (deck==null)
+                throw new ArgumentNullException(nameof(deck));
+            _repositoryManager.Deck.DeleteDeck(deck);
+           await _repositoryManager.SaveAsync();
         }
 
-        public Task<Deck> GetOneDeckByIdAsync(string userId, bool trackChanges)
+        public async Task<ResponseDeckDto> GetOneDeckByIdAsync(Guid deckId,string userId, bool trackChanges)
         {
-            throw new NotImplementedException();
+            var deck =await _repositoryManager.Deck.GetDecksByUserIdAsync(deckId,userId, trackChanges);
+            if(deck==null)
+                return null;
+
+            return _mapper.Map<ResponseDeckDto>(deck);
         }
 
         public async Task<IEnumerable<ResponseDeckDto>> GetUserByAllDecks(string userId, bool trackChanges)
@@ -46,9 +54,17 @@ namespace Application.Services
             return _mapper.Map<IEnumerable<ResponseDeckDto>>(decks);
         }
 
-        public void UpdateDeck(UpdateForDeckDto deckDto)
+        public async Task UpdateDeck(UpdateForDeckDto deckDto,string userId,Guid deckId)
         {
-            throw new NotImplementedException();
+            var deck = await _repositoryManager.Deck
+       .GetDecksByUserIdAsync(deckId, userId, trackChanges: true);
+
+            if (deck == null)
+                throw new ArgumentNullException(nameof(deck));
+
+            _mapper.Map(deckDto, deck);
+            await _repositoryManager.SaveAsync();
+
         }
     }
 }
