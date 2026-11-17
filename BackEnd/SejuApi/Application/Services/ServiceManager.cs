@@ -15,14 +15,18 @@ namespace Application.Services
     public class ServiceManager : IServiceManager
     {
         private readonly Lazy<IAuthenticationService> _authenticationService;
+        private readonly Lazy<ICardService> _cardService;
         private readonly Lazy<IDeckService> _deckService;
         public ServiceManager(IRepositoryManager repositoryManager ,IAuthenticationService service,ILoggerService logger ,IMapper mapper,UserManager<User> user, IConfiguration configuration)
         {
             _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationManager(logger, mapper, user, configuration));
             _deckService = new Lazy<IDeckService>(() => new DeckService(repositoryManager, mapper));
+            _cardService = new Lazy<ICardService>(() => new CardService(repositoryManager, mapper));
         }
         public IAuthenticationService AuthenticationService => _authenticationService.Value;
 
         public IDeckService DeckService => _deckService.Value;
+
+        public ICardService CardService => _cardService.Value;
     }
 }

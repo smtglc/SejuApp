@@ -1,21 +1,40 @@
 :root {
-  --bg: #0b1210;
-  --mint: #5ff5d4;
-  --line: rgba(255, 255, 255, 0.14);
-  color-scheme: dark;
+  --bg-0: #160a30;
+  --bg-1: #2b1457;
+  --bg-2: #4a2394;
+  --violet: #8b5cf6;
+  --violet-strong: #7c3aed;
+  --violet-soft: #c4a1ff;
+  --lilac: #ede0ff;
+  --gold: #f5c16c;
+  --line: rgba(196, 161, 255, 0.3);
+  --mint: var(--gold);   /* eski kodda var(--mint) geçen yerler bozulmasın diye */
 }
 
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
-
 body {
   margin: 0;
-  background: var(--bg);
-  color: #fff;
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  color: var(--lilac);
+  background:
+    radial-gradient(ellipse at 70% 40%, rgba(139, 92, 246, 0.35), transparent 55%),
+    radial-gradient(ellipse at 15% 10%, rgba(74, 35, 148, 0.5), transparent 50%),
+    var(--bg-0);
 }
-
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.page {
+  position: relative;
+  z-index: 1;
+}
 /* Vite şablonundaki #root kısıtlamalarını kaldırır */
 #root {
   width: 100%;

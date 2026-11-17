@@ -11,14 +11,17 @@ namespace Infrastructure.EFCore
     public class RepositoryManager : IRepositoryManager
     {
         private readonly Lazy<IDeckRepository> _deckRepository;
+        private readonly Lazy<ICardRepository> _cardRepository;
         private readonly RepositoryContext _context;
         public RepositoryManager(RepositoryContext context)
         {
             _context = context;
             _deckRepository = new Lazy<IDeckRepository>(() => new DeckRepository(_context));
+            _cardRepository = new Lazy<ICardRepository>(() => new CardRepository(_context));
         }
 
         public IDeckRepository Deck => _deckRepository.Value;
+        public ICardRepository Card => _cardRepository.Value;
 
         public async Task SaveAsync() =>await _context.SaveChangesAsync();
 

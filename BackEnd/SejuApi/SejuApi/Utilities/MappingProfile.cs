@@ -14,6 +14,8 @@ namespace SejuApi.Utilities
             CreateMap<CreateDeckDto, Deck>();
             CreateMap<UpdateForDeckDto, Deck>();
             CreateMap<Deck, ResponseDeckDto>();
+            CreateMap<CreateCardDto, Card>();
+            CreateMap<Card, ResponseCardDto>();
 
 
         }

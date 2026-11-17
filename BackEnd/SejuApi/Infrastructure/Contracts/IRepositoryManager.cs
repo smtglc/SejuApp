@@ -9,6 +9,7 @@ namespace Infrastructure.Contracts
     public interface IRepositoryManager
     {
         IDeckRepository Deck { get; }
+        ICardRepository Card { get; }
         Task SaveAsync();
     }  
 }

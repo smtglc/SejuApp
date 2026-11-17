@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { setUnauthorizedHandler } from './api/client'
 import type { TokenDto } from './api/types'
 
 interface AuthState {
@@ -29,6 +30,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('userName')
     setUserName(null)
   }
+
+  useEffect(() => {
+    setUnauthorizedHandler(signOut)
+    return () => setUnauthorizedHandler(null)
+  })
 
   return (
     <AuthContext.Provider value={{ userName, isLoggedIn: userName !== null, signIn, signOut }}>

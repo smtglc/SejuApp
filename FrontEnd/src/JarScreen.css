@@ -1,0 +1,487 @@
+/* ===================== GİRİŞ SONRASI KAVANOZ EKRANI ===================== */
+
+.jr-screen {
+  position: relative;
+  z-index: 2;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 200px 16px 40px; /* üstte kartın çıkacağı boşluk */
+}
+
+.jr-stage {
+  width: min(420px, 92vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.jr-jar {
+  position: relative;
+  width: 100%;
+}
+
+/* Canvas kapsayıcısı: kartların ÖNÜNDE durur (kart kavanozun arkasından çıkar) */
+.jr-canvas {
+  position: relative;
+  z-index: 2;
+  height: 480px; /* kavanoz kutusunun yüksekliği */
+  transition: filter 0.25s ease;
+}
+
+/* Üzerine gelince kavanozun silüeti etrafında mor çizgi + ışıma */
+.jr-canvas.is-hover {
+  filter: drop-shadow(2px 0 0 #c084fc) drop-shadow(-2px 0 0 #c084fc)
+    drop-shadow(0 2px 0 #c084fc) drop-shadow(0 -2px 0 #c084fc)
+    drop-shadow(0 0 16px rgba(168, 85, 247, 0.95));
+}
+
+/* ------------------------- Pırıltılar ------------------------- */
+.jr-sparkles {
+  position: absolute;
+  left: 50%;
+  top: 93px; /* kavanozun kapağının tepesi */
+  width: 0;
+  height: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.jr-sparkles i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 10%, #c4a1ff 50%, transparent 75%);
+  box-shadow: 0 0 10px #c4a1ff, 0 0 22px rgba(168, 85, 247, 0.8);
+  animation: jr-burst 0.95s ease-out forwards;
+}
+@keyframes jr-burst {
+  from {
+    opacity: 1;
+    transform: rotate(var(--a)) translateX(0) scale(1.4);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(var(--d)) scale(0.1);
+  }
+}
+
+/* ------------------------- Kart yuvası ------------------------- */
+.jr-slot {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - 93px); /* kartın altı kapağın tepesine denk gelir */
+  width: 210px;
+  height: 280px;
+  z-index: 3;
+  transform: translate(-50%, 0);
+}
+/* Yükselirken kart kavanozun ARKASINDA kalır, sonra öne geçer */
+.jr-slot.rising {
+  z-index: 1;
+  animation: jr-rise 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+.jr-slot.editor {
+  animation: jr-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+/* Tamam'a basınca kart kavanoza süzülür (kavanozun arkasına geçer) */
+.jr-slot.editor.drop {
+  z-index: 1;
+  animation: jr-drop 0.7s cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
+}
+
+@keyframes jr-rise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 250px) scale(0.55) rotate(-6deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    transform: translate(-50%, -14px) scale(1.04) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1) rotate(0);
+  }
+}
+@keyframes jr-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 40px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+@keyframes jr-drop {
+  to {
+    opacity: 0;
+    transform: translate(-50%, 290px) scale(0.35) rotate(10deg);
+  }
+}
+
+/* Havada hafifçe süzülme */
+.jr-bob,
+.jr-persp {
+  width: 100%;
+  height: 100%;
+  perspective: 1000px;
+}
+.jr-slot.shown .jr-bob {
+  animation: jr-bob 3.6s ease-in-out infinite;
+}
+@keyframes jr-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* ------------------------- Kart ------------------------- */
+.jr-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  transform-style: preserve-3d;
+  transition: transform 0.7s ease;
+}
+.jr-editor,
+.jr-slot.editor .jr-card {
+  cursor: default;
+}
+.jr-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.jr-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 22px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  color: #2a1157;
+  box-shadow: 0 0 38px rgba(168, 85, 247, 0.65), inset 0 0 30px rgba(255, 255, 255, 0.35);
+}
+.jr-face::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  pointer-events: none;
+}
+.jr-front {
+  background: linear-gradient(150deg, #fbf7ff 0%, #e6d6ff 55%, #cdb0ff 100%);
+}
+.jr-back {
+  background: linear-gradient(150deg, #f6edff 0%, #d9b8ff 50%, #b57bff 100%);
+  transform: rotateY(180deg);
+}
+.jr-face small {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #5b3f9a;
+}
+.jr-face b {
+  padding: 0 16px;
+  font-size: 34px;
+  font-weight: 900;
+  text-align: center;
+  word-break: break-word;
+}
+.jr-star {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 20px;
+  color: #fff;
+  text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
+}
+
+/* ------------------------- Kart ekleme formu ------------------------- */
+.jr-face input {
+  width: 80%;
+  padding: 6px 4px;
+  border: 0;
+  border-bottom: 2px solid rgba(74, 45, 138, 0.5);
+  background: transparent;
+  color: #2a1157;
+  font: 800 26px inherit;
+  text-align: center;
+  outline: none;
+}
+.jr-face input::placeholder {
+  color: rgba(42, 17, 87, 0.35);
+}
+.jr-face input:focus {
+  border-bottom-color: #7c3aed;
+}
+.jr-error {
+  font-style: normal;
+  font-size: 12px;
+  color: #b42318;
+}
+
+.jr-round {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.6);
+  transition: transform 0.2s;
+}
+.jr-round:hover:not(:disabled) {
+  transform: scale(1.08);
+}
+.jr-round:disabled,
+.jr-ok:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.jr-next {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+}
+.jr-back-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.jr-ok {
+  min-height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: 800 14px inherit;
+  color: #2a1157;
+  background: #f5c16c;
+  box-shadow: 0 0 20px rgba(245, 193, 108, 0.45);
+}
+
+/* ------------------------- Kart ekle butonu ------------------------- */
+.jr-add {
+  margin-top: 18px;
+  min-height: 48px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: 800 15px inherit;
+  color: #2a1157;
+  background: linear-gradient(135deg, #f8cf86, #f5c16c);
+  box-shadow: 0 0 28px rgba(245, 193, 108, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.jr-add:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(245, 193, 108, 0.55);
+}
+.jr-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.jr-add:focus-visible,
+.jr-ok:focus-visible,
+.jr-round:focus-visible,
+.jr-card:focus-visible {
+  outline: 2px solid #c4a1ff;
+  outline-offset: 4px;
+}
+
+.jr-msg {
+  min-height: 22px;
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: #d9c8f5;
+}
+
+
+/* ------------------------- Atmosfer efektleri ------------------------- */
+.jr-aura {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 440px;
+  height: 440px;
+  margin: -220px 0 0 -220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(124, 58, 237, 0.22) 40%, transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 0;
+  animation: jr-aura 3.6s ease-in-out infinite;
+  transition: background 0.3s;
+}
+.jr-aura.is-hover {
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.75) 0%, rgba(147, 51, 234, 0.35) 42%, transparent 72%);
+}
+@keyframes jr-aura {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* Kavanozun altında zemine yansıyan ışık */
+.jr-floor {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: 340px;
+  height: 54px;
+  margin-left: -170px;
+  background: radial-gradient(ellipse at center, rgba(196, 161, 255, 0.55) 0%, rgba(124, 58, 237, 0.25) 45%, transparent 72%);
+  filter: blur(4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Yanıp sönen yıldızlar */
+.jr-twinkle {
+  position: absolute;
+  z-index: 4;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 6px #f5c16c, 0 0 16px #c084fc;
+  pointer-events: none;
+  animation: jr-twinkle 3s ease-in-out infinite;
+}
+@keyframes jr-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.6) rotate(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(12deg);
+  }
+}
+
+/* "Tıkla" ipucu */
+.jr-hint {
+  position: absolute;
+  z-index: 4;
+  left: 66%;
+  top: 74%;
+  width: 44px;
+  height: 44px;
+  pointer-events: none;
+}
+.jr-hint i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  animation: jr-ping 1.8s ease-out infinite;
+}
+.jr-hint svg {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  filter: drop-shadow(0 0 6px #a855f7);
+  animation: jr-tap 1.8s ease-in-out infinite;
+}
+@keyframes jr-ping {
+  from {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@keyframes jr-tap {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  40% {
+    transform: translate(-3px, -3px) scale(0.92);
+  }
+}
+
+/* ------------------------- Mobil ------------------------- */
+@media (max-width: 520px) {
+  .jr-aura {
+    width: 360px;
+    height: 360px;
+    margin: -180px 0 0 -180px;
+  }
+  .jr-floor {
+    width: 280px;
+    margin-left: -140px;
+  }
+  .jr-screen {
+    padding-top: 170px;
+  }
+  .jr-canvas {
+    height: 400px;
+  }
+  .jr-sparkles {
+    top: 78px;
+  }
+  .jr-slot {
+    width: 176px;
+    height: 236px;
+    bottom: calc(100% - 78px);
+  }
+  .jr-face b {
+    font-size: 28px;
+  }
+  .jr-face input {
+    font-size: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jr-slot,
+  .jr-bob,
+  .jr-sparkles i,
+  .jr-aura,
+  .jr-twinkle,
+  .jr-hint i,
+  .jr-hint svg {
+    animation: none !important;
+  }
+  .jr-card {
+    transition: none;
+  }
+}

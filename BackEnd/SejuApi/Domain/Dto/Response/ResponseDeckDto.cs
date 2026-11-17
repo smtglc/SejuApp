@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace Domain.Dto.Response
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
+        public ICollection<ResponseCardDto> Cards { get; set; } = new List<ResponseCardDto>();
     }
 }

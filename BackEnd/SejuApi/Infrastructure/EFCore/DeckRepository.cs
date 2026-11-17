@@ -26,13 +26,14 @@ namespace Infrastructure.EFCore
         public async Task<IEnumerable<Deck>> GetUserByAllDecks(string userId,bool trackChanges)
         {
             return await FindByCondition(d =>d.UserId ==userId,trackChanges)
+                .Include(x => x.Cards)
                 .OrderBy(d=>d.Name)
                 .ToListAsync();
         }
 
         public async Task<Deck> GetDecksByUserIdAsync(Guid deckId,string userId, bool trackChanges)
         {
-           return await FindByCondition(x => x.Id.Equals(deckId) && x.UserId.Equals(userId), trackChanges).SingleOrDefaultAsync();
+           return await FindByCondition(x => x.Id.Equals(deckId) && x.UserId.Equals(userId), trackChanges).Include(c => c.Cards).SingleOrDefaultAsync();
         }
 
         public void UpdateDeck(Deck deck) => Update(deck);
